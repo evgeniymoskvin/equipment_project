@@ -264,7 +264,7 @@ class EquipmentModel(models.Model):
     """Техника"""
     equipment_name = models.CharField(verbose_name="Наименование", max_length=250, null=True, blank=True)
     equipment_model = models.CharField(verbose_name="Модель", max_length=250, null=True, blank=True)
-    equipment_serial_number = models.CharField(verbose_name="Серийный номер", max_length=500, null=True, blank=True)
+    equipment_serial_number = models.CharField(verbose_name="Серийный номер", max_length=500, null=True, blank=True, unique=True)
     equipment_inventory_number = models.CharField(verbose_name="Инвентарный номер", max_length=250, null=True, blank=True)
     equipment_type = models.ForeignKey(TypeOfEquipmentModel, verbose_name="Тип техники", null=True, blank=True, on_delete=models.SET_NULL)
     equipment_spec = models.ForeignKey(EquipmentSpecificationsModel, verbose_name="Характеристики", null=True, blank=True, on_delete=models.SET_NULL)
@@ -276,19 +276,23 @@ class EquipmentModel(models.Model):
         verbose_name_plural = _("оборудование")
 
     def __str__(self):
-        return f'{self.equipment_type}: {self.equipment_name}'
+        return f'{self.equipment_type}: {self.equipment_name} (с.н. {self.equipment_serial_number})'
 #
-# class EquipmentEmployeeModel(models.Model):
-#     """Техника за сотрудником"""
-#
-#     equipment = models.OneToOneField(EquipmentModel, verbose_name="Оборудование/техника", null=True, blank=True, on_delete=models.SET_NULL)
-#     emp = models.ForeignKey(EmployeeModel, verbose_name="Сотрудник", null=True, blank=True, on_delete=models.SET_NULL)
-#     room = models.CharField(verbose_name="кабинет", max_length=10, null=True, blank=True)
-#
-#     class Meta:
-#         verbose_name = _("оборудование у сотрудника")
-#         verbose_name_plural = _("оборудование у сотрудников")
-#
-#     def __str__(self):
-#         return f'{self.emp}: {self.equipment}'
+class EquipmentEmployeeModel(models.Model):
+    """Техника за сотрудником"""
 
+    equipment = models.OneToOneField(EquipmentModel, verbose_name="Оборудование/техника", null=True, blank=True, on_delete=models.SET_NULL)
+    emp = models.ForeignKey(EmployeeModel, verbose_name="Сотрудник", null=True, blank=True, on_delete=models.SET_NULL)
+    room = models.CharField(verbose_name="кабинет", max_length=10, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("оборудование у сотрудника")
+        verbose_name_plural = _("оборудование у сотрудников")
+
+    def __str__(self):
+        return f'{self.emp}: {self.equipment}'
+
+# class EquipmentActModel(models.Model):
+#     """Акты перемещения техники"""
+#
+#
